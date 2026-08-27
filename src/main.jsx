@@ -4,20 +4,12 @@ import { createGame, findAiMove, passMove, playMove, resignGame } from './game/g
 import '../styles.css';
 
 const lessons = [
-  ['01', 'The board & stones', 'Learn the language of the 9x9 board.', '12 min', 'complete'],
-  ['02', 'How to make a move', 'Coordinates, turns, and a legal play.', '8 min', 'complete'],
-  ['03', 'Liberties', 'The breathing space every stone needs.', '15 min', 'complete'],
-  ['04', 'Capturing stones', 'Spot groups with nowhere left to go.', '18 min', 'in-progress'],
-  ['05', 'The ko rule', 'Why a position cannot repeat immediately.', '10 min', 'locked'],
-  ['06', 'Life and death', 'Find the eyes that keep groups alive.', '22 min', 'locked']
-];
-
-const puzzles = [
-  ['capture', 'A clean capture', 'Find the move that takes the last liberty.', 'Capture', 'Beginner', '96%'],
-  ['shape', 'The empty triangle', 'Read the shape before you commit.', 'Shape', 'Beginner', '82%'],
-  ['eyes', 'Two eyes to live', 'Can this group make enough space?', 'Life and death', 'Easy', '--'],
-  ['tesuji', 'The forcing tesuji', 'A sharp move hiding in plain sight.', 'Tesuji', 'Easy', '74%'],
-  ['endgame', 'Close the corner', 'Find the biggest endgame point.', 'Endgame', 'Normal', '--']
+  ['01', 'The board and stones', 'Learn the language of the 9x9 board.', '12 min'],
+  ['02', 'How to make a move', 'Coordinates, turns, and a legal play.', '8 min'],
+  ['03', 'Liberties', 'The breathing space every stone needs.', '15 min'],
+  ['04', 'Capturing stones', 'Spot groups with nowhere left to go.', '18 min'],
+  ['05', 'The ko rule', 'Why a position cannot repeat immediately.', '10 min'],
+  ['06', 'Life and death', 'Find the eyes that keep groups alive.', '22 min']
 ];
 
 const navItems = [['dashboard', '[]', 'Dashboard'], ['learn', '◒', 'Learn'], ['practice', '{}', 'Practice'], ['play', '⌁', 'Play'], ['statistics', '◌', 'Statistics'], ['profile', '◎', 'Profile']];
@@ -35,20 +27,11 @@ function Dashboard({ navigate }) {
 }
 
 function Learn() {
-  const [filter, setFilter] = useState('All lessons');
-  const filtered = lessons.filter((lesson) => filter === 'All lessons' || (filter === 'Completed' && lesson[4] === 'complete') || (filter === 'In progress' && lesson[4] === 'in-progress'));
-  return <><PageHeader eyebrow="Your curriculum" title="Learn the shape of good moves." subtitle="Short lessons, clear explanations, and a board to try it yourself." /><div className="section-row"><div className="filter-tabs">{['All lessons', 'In progress', 'Completed'].map((item) => <button key={item} className={`filter-tab ${filter === item ? 'active' : ''}`} onClick={() => setFilter(item)}>{item}</button>)}</div><span className="eyebrow">0 / 6 complete</span></div><div className="lesson-grid">{filtered.map((lesson, index) => <article className="card lesson-card" key={lesson[0]} onClick={() => window.alert(index < 4 ? `${lesson[1]} opened` : 'Complete the previous lesson first')}><span className="lesson-number">LESSON {lesson[0]}</span><h3>{lesson[1]}</h3><p>{lesson[2]}</p><div className="lesson-meta"><span>{lesson[3]}</span><span className={lesson[4] === 'complete' ? 'complete' : ''}>{lesson[4] === 'complete' ? 'Complete' : lesson[4] === 'locked' ? 'Locked' : 'Continue ->'}</span></div></article>)}</div></>;
+  return <><PageHeader eyebrow="Your curriculum" title="Learn the shape of good moves." subtitle="A focused course catalog for the fundamentals of Go." /><div className="section-row"><h2>Course catalog</h2><span className="eyebrow">6 lessons</span></div><div className="lesson-grid">{lessons.map((lesson) => <article className="card lesson-card" key={lesson[0]}><span className="lesson-number">LESSON {lesson[0]}</span><h3>{lesson[1]}</h3><p>{lesson[2]}</p><div className="lesson-meta"><span>{lesson[3]}</span><span>Available</span></div></article>)}</div></>;
 }
 
-function PuzzleModal({ puzzle, close, toast }) {
-  if (!puzzle) return null;
-  return <div className="modal-backdrop open"><div className="modal"><div className="eyebrow">{puzzle[3]} · {puzzle[4]}</div><h2>{puzzle[1]}</h2><p>{puzzle[2]} Click a point on the mini board to try your read.</p><div className="board-wrap" style={{ borderWidth: 6, padding: 5, marginTop: 18 }}><div className="board" style={{ '--board-step': '25%' }}>{Array.from({ length: 25 }, (_, index) => <button className="board-cell" key={index} style={{ left: `${(index % 5) * 25}%`, top: `${Math.floor(index / 5) * 25}%` }}>{[6, 7, 11, 12].includes(index) && <span className={`stone ${index === 12 ? 'white' : 'black'}`} />}</button>)}</div></div><div className="modal-actions"><button className="button ghost" onClick={close}>Not now</button><button className="button primary" onClick={() => { close(); toast('Puzzle attempt recorded locally.'); }}>Try move -></button></div></div></div>;
-}
-
-function Practice({ toast }) {
-  const [filter, setFilter] = useState('All puzzles'); const [selected, setSelected] = useState(null);
-  const filtered = filter === 'All puzzles' ? puzzles : puzzles.filter((puzzle) => puzzle[3] === filter || puzzle[4] === filter);
-  return <><PageHeader eyebrow="Tactical reading" title="Practice with purpose." subtitle="Build your intuition one position at a time." /><div className="practice-layout"><section><div className="practice-head"><SectionRow title="Puzzle library" eyebrow={`${puzzles.length} available`} /><div className="practice-filters"><select className="select" value={filter} onChange={(event) => setFilter(event.target.value)}><option>All puzzles</option><option>Capture</option><option>Life and death</option><option>Shape</option><option>Tesuji</option><option>Endgame</option></select><select className="select" defaultValue="Any difficulty"><option>Any difficulty</option><option>Beginner</option><option>Easy</option><option>Normal</option></select></div></div><div className="puzzle-list">{filtered.length ? filtered.map((puzzle) => <article className="card puzzle-card" key={puzzle[1]} onClick={() => setSelected(puzzle)}><div className="puzzle-symbol">{puzzle[0] === 'capture' ? '◎' : puzzle[0] === 'eyes' ? '◉' : puzzle[0] === 'tesuji' ? '✣' : puzzle[0] === 'endgame' ? '⌟' : '◇'}</div><div className="puzzle-copy"><h3>{puzzle[1]}</h3><p>{puzzle[2]}</p></div><span className="puzzle-tag">{puzzle[4]}</span><span className="puzzle-score">{puzzle[5]}</span></article>) : <div className="card empty-state">No puzzles match this filter yet.</div>}</div></section><aside className="card practice-side"><h3>Your puzzle profile</h3><Skill label="Solved" value="--" /><Skill label="Accuracy" value="--" /><Skill label="Avg. time" value="--" /><Skill label="Best category" value="--" /><button className="button primary" onClick={() => setSelected(puzzles[0])} style={{ width: '100%', marginTop: 14 }}>Quick solve -></button></aside></div><PuzzleModal puzzle={selected} close={() => setSelected(null)} toast={toast} /></>;
+function Practice() {
+  return <><PageHeader eyebrow="Tactical reading" title="Practice with purpose." subtitle="Puzzle content will appear here when the practice API is connected." /><div className="practice-layout"><section><div className="practice-head"><SectionRow title="Puzzle library" eyebrow="No puzzles loaded" /><div className="practice-filters"><select className="select" disabled defaultValue="All puzzles"><option>All puzzles</option></select><select className="select" disabled defaultValue="Any difficulty"><option>Any difficulty</option></select></div></div><div className="card empty-state"><h2>No puzzles yet</h2><p>Connect the puzzle service to load positions, attempts, and explanations.</p></div></section><aside className="card practice-side"><h3>Your puzzle profile</h3><Skill label="Solved" value="--" /><Skill label="Accuracy" value="--" /><Skill label="Avg. time" value="--" /><Skill label="Best category" value="--" /></aside></div></>;
 }
 
 function starPoints(size) { if (size === 9) return [20, 24, 40, 56, 60]; if (size === 13) return [42, 48, 84, 120, 126]; return [57, 63, 69, 117, 123, 129, 177, 183, 189]; }
