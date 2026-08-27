@@ -15,6 +15,7 @@ export function createGame(size = 9, options = {}) {
     consecutivePasses: 0,
     captures: { black: 0, white: 0 },
     moveNumber: 1,
+    lastMove: null,
     status: 'active',
     winner: null,
     history: []
@@ -97,6 +98,7 @@ export function playMove(game, index) {
       consecutivePasses: 0,
       captures: { ...game.captures, [player]: game.captures[player] + validation.captured.length },
       moveNumber: game.moveNumber + 1,
+      lastMove: index,
       history: [...game.history, { type: 'move', index, player, captured: validation.captured }]
     },
     move: { index, player, captured: validation.captured }
@@ -115,6 +117,7 @@ export function passMove(game) {
       koIndex: null,
       consecutivePasses: passes,
       moveNumber: game.moveNumber + 1,
+      lastMove: null,
       status: finished ? 'finished' : 'active',
       winner: finished ? (score.black > score.white ? COLORS.BLACK : score.white > score.black ? COLORS.WHITE : 'draw') : null,
       history: [...game.history, { type: 'pass', player: game.currentPlayer }]
