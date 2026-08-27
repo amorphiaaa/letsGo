@@ -23,6 +23,18 @@ test('occupied, suicide and ko moves are rejected', () => {
   assert.equal(playMove(capture.game, 1).error, 'ko');
 });
 
+test('a move removes a surrounded group, including multiple groups', () => {
+  let game = createGame(3, { board: [null, COLORS.WHITE, COLORS.BLACK, null, COLORS.BLACK, null, null, null, null], currentPlayer: COLORS.BLACK });
+  let result = playMove(game, 0);
+  assert.deepEqual(result.move.captured, [1]);
+  assert.equal(result.game.board[1], null);
+  assert.equal(result.game.captures.black, 1);
+  game = createGame(3, { board: [null, COLORS.WHITE, COLORS.BLACK, COLORS.WHITE, COLORS.BLACK, null, COLORS.BLACK, null, null], currentPlayer: COLORS.BLACK });
+  result = playMove(game, 0);
+  assert.deepEqual(result.move.captured.sort((a, b) => a - b), [1, 3]);
+  assert.equal(result.game.captures.black, 2);
+});
+
 test('two passes finish the game and resign awards the win', () => {
   let game = createGame(3);
   game = passMove(game).game;
