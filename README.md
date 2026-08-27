@@ -10,6 +10,14 @@ python -m http.server 4173
 
 Then open `http://localhost:4173`.
 
+## Run with Docker
+
+```powershell
+docker compose up --build
+```
+
+Then open `http://localhost:8080`. The image uses a multi-stage build: Vite compiles the React app and Nginx serves the optimized static output with SPA routing fallback.
+
 The current data layer is intentionally local and deterministic so the product flow is usable before the FastAPI / KataGo services are connected. The UI keeps game rules and AI analysis as separate concepts so the REST integration can be added later.
 
 ## Stack
